@@ -1,13 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { useNavigate } from "react-router-dom";
 import { showError, showInfo, showSuccess } from "../utils/toastUtils";
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+import bookingShape from '../assets/img/booking-shape.png';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState("false");
   const { store, dispatch } = useGlobalReducer()
+
+  // Inicializamos AOS al montar el componente
+  useEffect(() => {
+    AOS.init({ duration: 1000 });
+  }, []);
+
+  const togglePassword = () => {
+    setShowPassword(!showPassword);
+  };
 
   const IniciarSesion = async (e) => {
     e.preventDefault();
@@ -56,7 +69,7 @@ export const LoginPage = () => {
           navigate("/")
         }
 
-      // navigate("/dashboard"); // si quieres redirigir
+        // navigate("/dashboard"); // si quieres redirigir
       } else {
         showError(data.msg || "Error al iniciar sesión.");
       }
@@ -67,40 +80,60 @@ export const LoginPage = () => {
   };
 
   return (
-    <form className="row justify-content-center p-4" onSubmit={IniciarSesion}>
-      <div className="col-md-6">
-        <h1 className="text-center mb-5">Iniciar Sesión</h1>
+    <div className="container my-5">
+      <div className="d-flex justify-content-center">
+      <form className="row justify-content-center p-4 border rounded-4 shadow col-md-6" data-aos="fade-up" onSubmit={IniciarSesion} style={{ backgroundColor: "#00813d", color: "#fff", backgroundImage: `url(${bookingShape})` }}>
+        <div className="col-md-8">
+          <h1 className="text-center text-uppercase mb-5">Iniciar Sesión</h1>
 
-        <div className="mb-5">
-          <input
-            type="email"
-            className="form-control"
-            placeholder="Email"
-            id="inputEmail"
-            style={{ borderRadius: "0" }}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
+          <div className="mb-5" data-aos="fade-up">
+            <input
+              type="email"
+              className="form-control custom-input"
+              placeholder="Email"
+              id="inputEmail"
+              style={{ borderRadius: "0", backgroundColor: "#00813d", color: "#fff" }}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
 
-        <div className="mb-5">
+          <div className="mb-5 position-relative" data-aos="fade-up">
           <input
-            type="password"
-            className="form-control"
+            type={showPassword ? "text" : "password"}
+            className="form-control custom-input"
             placeholder="Contraseña"
             id="inputPassword"
-            style={{ borderRadius: "0" }}
-            value={password}
+            style={{ borderRadius: "0", backgroundColor: "#00813d", color: "#fff" }}
+            value={showPassword}
             onChange={(e) => setPassword(e.target.value)}
+            onClick={togglePassword}
           />
+
+          <span
+            onClick={togglePassword}
+            style={{
+              position: "absolute",
+              top: "50%",
+              right: "15px",
+              transform: "translateY(-50%)",
+              cursor: "pointer",
+              color: "#fff"
+            }}
+          >
+            {showPassword ? <FaEyeSlash size={25} /> : <FaEye size={25} />}
+          </span>
+
         </div>
 
         <div className="text-center">
-          <button type="submit" className="btn btn-primary w-50">
+          <button type="submit" className="btn bg-yellow">
             Iniciar Sesión
           </button>
         </div>
-      </div>
-    </form>
+    </div>
+    </form >
+      </div >
+    </div >
   );
 };
